@@ -1,3 +1,3 @@
-# aaaaa
-- b
-- c
+# Competitive programming
+- AtCoder
+- AOJ
