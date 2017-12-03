@@ -16,12 +16,12 @@ main = do
   dp (capacity, items) memo
   putStrLn . show . last =<< getElems memo
 
-memoize :: ((Capacity, ItemList) -> IOUArray (Int, Int) Int -> IO (IOUArray (Int, Int) Int)) -> (Capacity, ItemList) -> IOUArray (Int, Int) Int -> IO Int
-memoize f (c, i) t = do
+memoize :: (Capacity, ItemList) -> IOUArray (Int, Int) Int -> IO Int
+memoize (c, i) t = do
   v <- readArray t (c, length i)
   if v < 0
     then do
-      f (c, i) t
+      dp (c, i) t
       return =<< readArray t (c, length i)
     else return v
 
@@ -31,11 +31,11 @@ dp (c, []) t = do
   return t
 dp (c, as@(i:is)) t
   | c < fst i = do
-    v <- memoize dp (c, is) t
+    v <- memoize (c, is) t
     writeArray t (c, length as) v
     return t
   | otherwise = do
-    x <- memoize dp (c, is) t
-    y <- memoize dp (c - fst i, is) t
+    x <- memoize (c, is) t
+    y <- memoize (c - fst i, is) t
     writeArray t (c, length as) (max x $ y + snd i)
     return t
