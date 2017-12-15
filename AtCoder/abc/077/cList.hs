@@ -3,18 +3,6 @@ import Data.ByteString.Char8 as BC (words, getLine, readInt)
 import Data.Maybe (fromJust)
 
 main = do
-  {-
-  n <- (read :: String -> Int) <$> getLine
-  a <- sort . map (read :: String -> Int) . words <$> getLine
-  b <- sort . map (read :: String -> Int) . words <$> getLine
-  c <- sort . map (read :: String -> Int) . words <$> getLine
-  print . sum $ zipWith (*) (scanl1 (+) $ ltList a b) (gtList (length c) c b)
-  let a = [0..10^5]
-      b = replicate (10^5) 1
-      c = replicate (10^5) 2
-      d = replicate (10^5) 3
-  printAns b c d
-  -}
   n <- fst . fromJust . BC.readInt <$> BC.getLine
   a <- sort . map (fst . fromJust . BC.readInt) . BC.words <$> BC.getLine
   b <- sort . map (fst . fromJust . BC.readInt) . BC.words <$> BC.getLine
