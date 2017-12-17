@@ -15,7 +15,6 @@ getIntBC = bsToInt <$> BC.getLine
 getIntListBC :: IO [Int]
 getIntListBC = map bsToInt . BC.words <$> BC.getLine
 
-
 --2進数へ基数変換
 int2bin :: Int -> [Int]
 int2bin 0 = []
@@ -42,3 +41,13 @@ innerLB lb ub x xs
                    in if (xs ! mid) > x then innerLB lb mid x xs
                                         else innerLB mid ub x xs
   | otherwise   = ub
+
+repeatMemo :: IOUArray Int Int -> [Int] -> IO (IOUArray Int Int)
+repeatMemo memo (a:b:_) = do
+  return =<< foldM memoize memo [a..b]
+
+memoize :: IOUArray Int Int -> Int -> IO (IOUArray Int Int)
+memoize memo x = do
+  n <- readArray memo x
+  writeArray memo x (n+1)
+  return memo
