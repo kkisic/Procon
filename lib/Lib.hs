@@ -1,7 +1,9 @@
-import Data.List
-import Data.Array.Unboxed
 import qualified Data.ByteString.Char8 as BC
+import Data.List
+import Data.Array.IO
+import Data.Array.Unboxed
 import Data.Maybe (fromJust)
+import Control.Monad
 
 main :: IO ()
 main = return ()
@@ -50,4 +52,18 @@ memoize :: IOUArray Int Int -> Int -> IO (IOUArray Int Int)
 memoize memo x = do
   n <- readArray memo x
   writeArray memo x (n+1)
+  return memo
+
+repeatMemoize :: IOUArray Int Int -> (Int, Int) -> IO (IOUArray Int Int)
+repeatMemoize memo (i, j) = do
+  return =<< foldM memoize memo [i..j]
+
+--Warshall-Floyd
+memoizeWF :: IOUArray (Int, Int) Int -> (Int, Int, Int) -> IO (IOUArray (Int, Int) Int)
+memoizeWF memo (i, j, k) = do
+  x <- readArray memo (i, j)
+  y <- readArray memo (i, k)
+  z <- readArray memo (k, j)
+  let minWeight = min x $ y + z
+  writeArray memo (i, j) minWeight
   return memo
