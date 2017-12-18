@@ -1,8 +1,8 @@
 import qualified Data.ByteString.Char8 as BC
+import Data.Maybe (fromJust)
 import Data.List
 import Data.Array.IO
 import Data.Array.Unboxed
-import Data.Maybe (fromJust)
 import Control.Monad
 
 main :: IO ()
@@ -16,6 +16,9 @@ getIntBC = bsToInt <$> BC.getLine
 
 getIntListBC :: IO [Int]
 getIntListBC = map bsToInt . BC.words <$> BC.getLine
+
+getInt2DListBC :: IO [[Int]]
+getInt2DListBC = map (map bsToInt . BC.words) . BC.lines <$> BC.getContents
 
 --2進数へ基数変換
 int2bin :: Int -> [Int]
@@ -58,9 +61,9 @@ repeatMemoize :: IOUArray Int Int -> (Int, Int) -> IO (IOUArray Int Int)
 repeatMemoize memo (i, j) = do
   return =<< foldM memoize memo [i..j]
 
---Warshall-Floyd
-memoizeWF :: IOUArray (Int, Int) Int -> (Int, Int, Int) -> IO (IOUArray (Int, Int) Int)
-memoizeWF memo (i, j, k) = do
+--INFの値に注意
+warshallFloyd :: IOUArray (Int, Int) Int -> (Int, Int, Int) -> IO (IOUArray (Int, Int) Int)
+warshallFloyd memo (k, i, j) = do
   x <- readArray memo (i, j)
   y <- readArray memo (i, k)
   z <- readArray memo (k, j)
