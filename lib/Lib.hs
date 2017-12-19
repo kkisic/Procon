@@ -61,8 +61,17 @@ repeatMemoize :: IOUArray Int Int -> (Int, Int) -> IO (IOUArray Int Int)
 repeatMemoize memo (i, j) = do
   return =<< foldM memoize memo [i..j]
 
+type Memo = IOUArray (Int, Int) Int
+
+--let index = [(k, i, j) | k <- [1..n], i <- [1..n], j <- [1..n]]
+initWF :: Memo -> (Int, Int, Int) -> IO Memo
+initWF memo (x, y, d) = do
+  writeArray memo (x, y) d
+  writeArray memo (y, x) d
+  return memo
+
 --INFの値に注意
-warshallFloyd :: IOUArray (Int, Int) Int -> (Int, Int, Int) -> IO (IOUArray (Int, Int) Int)
+warshallFloyd :: Memo -> (Int, Int, Int) -> IO Memo
 warshallFloyd memo (k, i, j) = do
   x <- readArray memo (i, j)
   y <- readArray memo (i, k)
@@ -70,3 +79,48 @@ warshallFloyd memo (k, i, j) = do
   let minWeight = min x $ y + z
   writeArray memo (i, j) minWeight
   return memo
+
+type Weight = Int
+type Vertex = (Int, Weight)
+--key:頂点番号, value:隣接点集合
+type Graph = M.IntMap Neighbor
+--key:ある点の隣接点の頂点番号, value:辺の重さ
+type Neighbor = M.IntMap Weight
+
+--隣接リスト
+makeGraph :: Graph -> (Int, Int, Int) -> Graph
+makeGraph graph (x, y, z) = let nX = M.lookup x graph
+                                nY = M.lookup y graph
+                                vX = if nX == Nothing
+                                       then M.insert x (addNeighbor (y, z) M.empty) graph
+                                       else M.insert x (addNeighbor (y, z) $ fromJust nX) graph
+                            in if nY == Nothing
+                                 then M.insert y (addNeighbor (x, z) M.empty) vX
+                                 else M.insert y (addNeighbor (x, z) $ fromJust nY) vX
+
+readWeight :: IOUArray Int Int -> Int -> (Int, Int) -> IO Int
+readWeight weight k (x, y) = do
+  kx <- readArray weight x
+  ky <- readArray weight y
+  return $ kx + ky
+
+addNeighbor :: (Int, Int) -> Neighbor -> Neighbor
+addNeighbor (i, weight) ne = M.insert i weight ne
+
+readEdge :: Graph -> (Int, Int) -> Int
+readEdge graph (i, j) = let ne = fromJust $ M.lookup i graph
+                        in fromJust $ M.lookup j ne
+
+--DFS : 前pre 現在i
+search :: Graph -> IOUArray Int Int -> Int -> IOUArray Int Bool -> Vertex -> IO (IOUArray Int Bool)
+search graph weight pre mark (i, w) = do
+  isMark <- readArray mark i
+  case isMark of
+    True -> do
+      return mark
+    False -> do
+      writeArray mark i True
+      let ne = M.toList . fromJust $ M.lookup i graph
+      wSum <- readArray weight pre
+      writeArray weight i (wSum + w)
+      return =<< foldM (search graph weight i) mark ne
