@@ -1,4 +1,5 @@
 import qualified Data.ByteString.Char8 as BC
+import qualified Data.IntMap as M
 import Data.Maybe (fromJust)
 import Data.List
 import Data.Array.IO
