@@ -126,6 +126,28 @@ search graph weight pre mark (i, w) = do
       writeArray weight i (wSum + w)
       return =<< foldM (search graph weight i) mark ne
 
+greedy :: IOUArray Int Int -> [(Int, Int, Int)] -> Int -> Int -> IO Int
+greedy parent ((i, j, w):es) n k
+  | n == k    = return 0
+  | otherwise = do
+    pI <- getParent parent i
+    pJ <- getParent parent j
+    if pI == pJ then greedy parent es n k
+                else do
+                  writeArray parent pI pJ
+                  sum <- greedy parent es n $ k + 1
+                  return $ w + sum
+
+getParent :: IOUArray Int Int -> Int -> IO Int
+getParent memo i = do
+  parent <- readArray memo i
+  case parent of
+    0 -> return i
+    _ -> do
+      pp <- getParent memo parent
+      writeArray memo i pp
+      return pp
+
 type Table = IOUArray Int Int
 modN :: Int
 modN = 10^9+7
