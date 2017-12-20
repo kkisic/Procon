@@ -125,3 +125,41 @@ search graph weight pre mark (i, w) = do
       wSum <- readArray weight pre
       writeArray weight i (wSum + w)
       return =<< foldM (search graph weight i) mark ne
+
+type Table = IOUArray Int Int
+modN :: Int
+modN = 10^9+7
+
+--x^n (mod modN)
+(|^) :: Int -> Int -> Int
+(|^) x n
+  | n == 0    = 1
+  | even n    = (mod (x * x) modN) |^ (n `div` 2)
+  | otherwise = (flip mod modN) . (*x) $ x |^ (n - 1)
+
+--x! (mod modN)
+fact :: Int -> Int
+fact n
+  | n == 0    = 1
+  | otherwise = (flip mod modN) . (*n) $ fact (n-1)
+
+makeTable :: Table -> Int -> Int -> IO Table
+makeTable table n (-1) = return table
+makeTable table n i
+  | n == i = do
+    writeArray table i $ (fact n) |^ (10^9+5)
+    makeTable table i $ i-1
+  | otherwise = do
+    ie <- readArray table (i+1)
+    writeArray table i $ flip mod modN $ ie * (i+1)
+    makeTable table i $ i-1
+
+comb :: Table -> Int -> Int -> Int -> IO Int
+comb memo cn n k
+  |n >= k = do
+    ik <- readArray memo k
+    ink <- readArray memo $ n - k
+    let tmp = flip mod modN $ cn * ik
+        ans = flip mod modN $ tmp * ink
+    return ans
+  | otherwise = return 0
