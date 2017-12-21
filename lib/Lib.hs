@@ -28,25 +28,23 @@ int2bin n = n `mod` 2 : int2bin (n `div` 2)
 
 --[lb, ub) x未満のmax
 upperBound :: Int -> UArray Int Int -> Int
-upperBound x xs = innerUB (0-1) ((+1) . snd $ bounds xs) x xs
-
-innerUB :: Int -> Int -> Int -> UArray Int Int -> Int
-innerUB lb ub x xs
-  | ub - lb > 1 = let mid = lb + (ub - lb) `div` 2
-                   in if (xs ! mid) < x then innerUB mid ub x xs
-                                        else innerUB lb mid x xs
-  | otherwise   = lb
+upperBound x xs = innerUB (0-1) ((+1) . snd $ bounds xs)
+  where innerUB lb ub
+          | ub - lb > 1 = let mid = lb + (ub - lb) `div` 2
+                          in if (xs ! mid) < x
+                               then innerUB mid ub
+                               else innerUB lb mid
+          | otherwise   = lb
 
 --(lb, ub] xより大きいmin
 lowerBound :: Int -> UArray Int Int -> Int
-lowerBound x xs = innerLB (0-1) ((+1) . snd $ bounds xs) x xs
-
-innerLB :: Int -> Int -> Int -> UArray Int Int -> Int
-innerLB lb ub x xs
-  | ub - lb > 1 = let mid = lb + (ub - lb) `div` 2
-                   in if (xs ! mid) > x then innerLB lb mid x xs
-                                        else innerLB mid ub x xs
-  | otherwise   = ub
+lowerBound x xs = innerLB (0-1) ((+1) . snd $ bounds xs)
+  where innerLB lb ub
+          | ub - lb > 1 = let mid = lb + (ub - lb) `div` 2
+                          in if (xs ! mid) > x
+                               then innerLB lb mid
+                               else innerLB mid ub
+          | otherwise   = ub
 
 repeatMemo :: IOUArray Int Int -> [Int] -> IO (IOUArray Int Int)
 repeatMemo memo (a:b:_) = do
@@ -149,6 +147,7 @@ getParent memo i = do
       return pp
 
 type Table = IOUArray Int Int
+
 modN :: Int
 modN = 10^9+7
 
@@ -165,6 +164,17 @@ fact n
   | n == 0    = 1
   | otherwise = (flip mod modN) . (*n) $ fact (n-1)
 
+--nCk cn:n!
+comb :: Table -> Int -> Int -> Int -> IO Int
+comb memo cn n k
+  |n >= k = do
+    ik <- readArray memo k
+    ink <- readArray memo $ n - k
+    let tmp = flip mod modN $ cn * ik
+        ans = flip mod modN $ tmp * ink
+    return ans
+  | otherwise = return 0
+
 makeTable :: Table -> Int -> Int -> IO Table
 makeTable table n (-1) = return table
 makeTable table n i
@@ -175,13 +185,3 @@ makeTable table n i
     ie <- readArray table (i+1)
     writeArray table i $ flip mod modN $ ie * (i+1)
     makeTable table i $ i-1
-
-comb :: Table -> Int -> Int -> Int -> IO Int
-comb memo cn n k
-  |n >= k = do
-    ik <- readArray memo k
-    ink <- readArray memo $ n - k
-    let tmp = flip mod modN $ cn * ik
-        ans = flip mod modN $ tmp * ink
-    return ans
-  | otherwise = return 0
