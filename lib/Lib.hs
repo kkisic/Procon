@@ -60,6 +60,8 @@ repeatMemoize :: IOUArray Int Int -> (Int, Int) -> IO (IOUArray Int Int)
 repeatMemoize memo (i, j) = do
   return =<< foldM memoize memo [i..j]
 
+
+
 type Memo = IOUArray (Int, Int) Int
 
 --let index = [(k, i, j) | k <- [1..n], i <- [1..n], j <- [1..n]]
@@ -78,6 +80,8 @@ warshallFloyd memo (k, i, j) = do
   let minWeight = min x $ y + z
   writeArray memo (i, j) minWeight
   return memo
+
+
 
 type Weight = Int
 type Vertex = (Int, Weight)
@@ -146,6 +150,8 @@ getParent memo i = do
       writeArray memo i pp
       return pp
 
+
+
 type Table = IOUArray Int Int
 
 modN :: Int
@@ -185,3 +191,28 @@ makeTable table n i
     ie <- readArray table (i+1)
     writeArray table i $ flip mod modN $ ie * (i+1)
     makeTable table i $ i-1
+
+
+
+data SkewHeap a = Empty | Node a (SkewHeap a) (SkewHeap a) deriving (Show, Read, Eq)
+
+merge :: Ord a => SkewHeap a -> SkewHeap a -> SkewHeap a
+merge Empty h = h
+merge h Empty = h
+merge h1@(Node x1 l1 r1) h2@(Node x2 l2 r2)
+  | x1 <= x2  = Node x1 (merge h2 r1) l1
+  | otherwise = Node x2 (merge h1 r2) l2
+
+singleton :: Ord a => a -> SkewHeap a
+singleton x = Node x Empty Empty
+
+push :: Ord a => a -> SkewHeap a -> SkewHeap a
+push x heap = merge (singleton x) heap
+
+pop :: Ord a => SkewHeap a -> Maybe a
+pop Empty = Nothing
+pop (Node x l r) = Just x
+
+deleteMin :: Ord a => SkewHeap a -> SkewHeap a
+deleteMin Empty = Empty
+deleteMin (Node _ l r) = merge l r
