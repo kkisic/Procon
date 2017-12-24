@@ -41,6 +41,28 @@ repeatMemoize memo (i, j) = do
   return =<< foldM memoize memo [i..j]
 
 
+--素数表 pn:登録済の素数の個数 n:表の上限 x:判定対象のリスト
+--ex) prime table 1 n [i | i <- [3..n], odd i == True]
+prime :: Table -> Int -> Int -> [Int] -> IO Table
+prime table pn n []     = return table
+prime table pn n x@(i:is) = do
+  if i^2 <= n
+    then do
+      writeArray table (pn+1) i
+      let is' = filter ((/=0) . flip mod i) is
+      prime table (pn+1) n is'
+    else do
+      let len = length x
+          idx = [pn+1..pn+len]
+      prime' $ zip idx x
+      return table
+            where prime' :: [(Int, Int)] -> IO Table
+                  prime' [] = return table
+                  prime' ((i, n):ss) = do
+                    writeArray table i n
+                    prime' ss
+
+
 --逆元表
 type Table = IOUArray Int Int
 
