@@ -11,6 +11,7 @@ main = return ()
 type Memo2D = IOUArray (Int, Int) Int
 
 --let index = [(k, i, j) | k <- [1..n], i <- [1..n], j <- [1..n]]
+--(i, i) 0<=i<=n を0で初期化
 initWF :: Memo2D -> (Int, Int, Int) -> IO Memo2D
 initWF memo (x, y, d) = do
   writeArray memo (x, y) d
