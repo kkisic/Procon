@@ -8,11 +8,13 @@ import Control.Monad
 main :: IO ()
 main = return ()
 
+--重み付き辺
+type EdgeW = (Int, Int, Int)
 type Memo2D = IOUArray (Int, Int) Int
 
 --let index = [(k, i, j) | k <- [1..n], i <- [1..n], j <- [1..n]]
 --(i, i) 0<=i<=n を0で初期化
-initWF :: Memo2D -> (Int, Int, Int) -> IO Memo2D
+initWF :: Memo2D -> EdgeW -> IO Memo2D
 initWF memo (x, y, d) = do
   writeArray memo (x, y) d
   writeArray memo (y, x) d
@@ -30,12 +32,12 @@ warshallFloyd memo (k, i, j) = do
 
 
 
+--type EdgeW = (Int, Int, Int)
 type Memo = IOUArray Int Int
-type Edge = (Int, Int, Int)
 infinite = maxBound :: Int
 
 --始点:s weight[s] = 0, 他はweight[i] = infinite
-bellmanFord :: [Edge] -> Int -> Int -> Memo -> Int -> IO Memo
+bellmanFord :: [EdgeW] -> Int -> Int -> Memo -> Int -> IO Memo
 bellmanFord edge n dst weight i = do
   b <- readArray weight 0
   case b of
@@ -46,7 +48,7 @@ bellmanFord edge n dst weight i = do
       return weight
 
 --始点からdstの間にある負閉路を検出(weight[0] = 1)
-bf' :: Int -> Int -> Int -> Memo -> Edge -> IO Memo
+bf' :: Int -> Int -> Int -> Memo -> EdgeW -> IO Memo
 bf' n dst i weight (from, to, w) = do
   updatable <- readArray weight 0
   case updatable of
@@ -66,40 +68,58 @@ bf' n dst i weight (from, to, w) = do
 
 
 
-type Weight = Int
-type Vertex = (Int, Weight)
---key:頂点番号, value:隣接点集合
-type Graph = M.IntMap Neighbor
---key:ある点の隣接点の頂点番号, value:辺の重さ
-type Neighbor = M.IntMap Weight
+type Edge = (Int, Int)
+type Graph = M.IntMap [Int]
 
---隣接リスト
-makeGraph :: Graph -> (Int, Int, Int) -> Graph
-makeGraph graph (x, y, z) =
+--重み無し隣接リスト
+makeGraph :: Graph -> Edge -> Graph
+makeGraph graph (x, y) =
   let nX = M.lookup x graph
       nY = M.lookup y graph
       vX = if nX == Nothing
-             then M.insert x (addNeighbor (y, z) M.empty) graph
-             else M.insert x (addNeighbor (y, z) $ fromJust nX) graph
+             then M.insert x [y] graph
+             else M.insert x (y : (fromJust nX)) graph
   in if nY == Nothing
-       then M.insert y (addNeighbor (x, z) M.empty) vX
-       else M.insert y (addNeighbor (x, z) $ fromJust nY) vX
+       then M.insert y [x] vX
+       else M.insert y (x : (fromJust nY)) vX
 
-readWeight :: IOUArray Int Int -> Int -> (Int, Int) -> IO Int
+
+--type EdgeW = (Int, Int, Int)
+type Weight = Int
+type Vertex = (Int, Weight)
+--key:頂点番号, value:隣接点集合
+type GraphW = M.IntMap Neighbor
+--key:ある点の隣接点の頂点番号, value:辺の重さ
+type Neighbor = M.IntMap Weight
+
+--重み付き隣接リスト
+makeGraphW :: GraphW -> EdgeW -> GraphW
+makeGraphW graph (x, y, w) =
+  let nX = M.lookup x graph
+      nY = M.lookup y graph
+      vX = if nX == Nothing
+             then M.insert x (addNeighbor (y, w) M.empty) graph
+             else M.insert x (addNeighbor (y, w) $ fromJust nX) graph
+  in if nY == Nothing
+       then M.insert y (addNeighbor (x, w) M.empty) vX
+       else M.insert y (addNeighbor (x, w) $ fromJust nY) vX
+
+addNeighbor :: Vertex -> Neighbor -> Neighbor
+addNeighbor (i, weight) ne = M.insert i weight ne
+
+readEdge :: GraphW -> (Int, Int) -> Int
+readEdge graph (i, j) = let ne = fromJust $ M.lookup i graph
+                        in fromJust $ M.lookup j ne
+
+readWeight :: Memo -> Int -> (Int, Int) -> IO Int
 readWeight weight k (x, y) = do
   kx <- readArray weight x
   ky <- readArray weight y
   return $ kx + ky
 
-addNeighbor :: (Int, Int) -> Neighbor -> Neighbor
-addNeighbor (i, weight) ne = M.insert i weight ne
-
-readEdge :: Graph -> (Int, Int) -> Int
-readEdge graph (i, j) = let ne = fromJust $ M.lookup i graph
-                        in fromJust $ M.lookup j ne
 
 --DFS : 前pre 現在i
-search :: Graph -> IOUArray Int Int -> Int -> IOUArray Int Bool -> Vertex -> IO (IOUArray Int Bool)
+search :: GraphW -> Memo -> Int -> IOUArray Int Bool -> Vertex -> IO (IOUArray Int Bool)
 search graph weight pre mark (i, w) = do
   isMark <- readArray mark i
   case isMark of
@@ -113,24 +133,34 @@ search graph weight pre mark (i, w) = do
       return =<< foldM (search graph weight i) mark ne
 
 --MST
-greedy :: IOUArray Int Int -> [(Int, Int, Int)] -> Int -> Int -> IO Int
+greedy :: Memo -> [EdgeW] -> Int -> Int -> IO Int
 greedy parent ((i, j, w):es) n k
   | n == k    = return 0
   | otherwise = do
-    pI <- getParent parent i
-    pJ <- getParent parent j
+    pI <- getRepresentative parent i
+    pJ <- getRepresentative parent j
     if pI == pJ then greedy parent es n k
                 else do
                   writeArray parent pI pJ
                   sum <- greedy parent es n $ k + 1
                   return $ w + sum
 
-getParent :: IOUArray Int Int -> Int -> IO Int
-getParent memo i = do
+unionFind :: Memo -> [Edge] -> IO Memo
+unionFind memo [] = return memo
+unionFind memo ((i, j):es) = do
+  pI <- getRepresentative memo i
+  pJ <- getRepresentative memo j
+  if pI == pJ then unionFind memo es
+              else do
+                writeArray memo pI pJ
+                unionFind memo es
+
+getRepresentative :: Memo -> Int -> IO Int
+getRepresentative memo i = do
   parent <- readArray memo i
   case parent of
     0 -> return i
     _ -> do
-      pp <- getParent memo parent
+      pp <- getRepresentative memo parent
       writeArray memo i pp
       return pp
