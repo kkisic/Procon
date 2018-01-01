@@ -1,0 +1,1 @@
+main = putStrLn <$> (let f n | n < 1000 = ("0" ++) . show $ div n 100 | n >= 1000 && n <= 5000 = show $ div n 100 | n >= 6000 && n <= 30000 = show . (+50) . (flip div) 1000 $ n | n >= 35000 && n <= 70000 = show . (+80) . (flip div) 5 .  (flip (-)) 30 . (flip div) 1000 $ n | otherwise = "89" in f) . (read :: String -> Int) =<< getLine
