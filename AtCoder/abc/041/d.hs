@@ -39,7 +39,6 @@ dp graph memo (a, v) = do
           return memo
         else return memo
 
-
 contains :: Int -> [Int] -> Bool
 contains a sk = or $ map ((==1) . (.&.1) . shiftR a) sk
 

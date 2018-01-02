@@ -164,3 +164,27 @@ getRepresentative memo i = do
       pp <- getRepresentative memo parent
       writeArray memo i pp
       return pp
+
+
+
+--bitDP v <- [0..n-1]
+dp :: Graph -> Memo -> (Int, Int) -> IO Memo
+dp graph memo (a, v) = do
+  if 1 .&. shiftR a v == 1
+    then return memo
+    else do
+      let sK = M.lookup v graph
+          isRight = if sK == Nothing
+                    then True
+                    else not . contains a $ fromJust sK
+      if isRight
+        then do
+          x <- readArray memo a
+          y <- readArray memo $ a .|. shiftL 1 v
+          writeArray memo (a .|. shiftL 1 v) $ x + y
+          return memo
+        else return memo
+
+
+contains :: Int -> [Int] -> Bool
+contains a sk = or $ map ((==1) . (.&.1) . shiftR a) sk
