@@ -103,28 +103,3 @@ makeTable table n i
     ie <- readArray table (i+1)
     writeArray table i $ flip mod modN $ ie * (i+1)
     makeTable table i $ i-1
-
-
---Skew Heap : for Priority-Queue
-data SkewHeap a = Empty | Node a (SkewHeap a) (SkewHeap a) deriving (Show, Read, Eq)
-
-merge :: Ord a => SkewHeap a -> SkewHeap a -> SkewHeap a
-merge Empty h = h
-merge h Empty = h
-merge h1@(Node x1 l1 r1) h2@(Node x2 l2 r2)
-  | x1 <= x2  = Node x1 (merge h2 r1) l1
-  | otherwise = Node x2 (merge h1 r2) l2
-
-singleton :: Ord a => a -> SkewHeap a
-singleton x = Node x Empty Empty
-
-push :: Ord a => a -> SkewHeap a -> SkewHeap a
-push x heap = merge (singleton x) heap
-
-pop :: Ord a => SkewHeap a -> Maybe a
-pop Empty = Nothing
-pop (Node x l r) = Just x
-
-deleteMin :: Ord a => SkewHeap a -> SkewHeap a
-deleteMin Empty = Empty
-deleteMin (Node _ l r) = merge l r
