@@ -68,6 +68,39 @@ bf' n dst i weight (from, to, w) = do
 
 
 
+type Cost = IOUArray Int Int
+type Mark = IOUArray Int Bool
+
+--dijkstra n:頂点数, num:現確定数, SkewHeap (dist, vertex), Cost:iへの最短距離, Mark:iが確定済
+--let ne  = M.lookup 1 graph
+--    pq  = foldl (addPQ 0) Empty $ M.toList . fromJust $ ne
+--writeArray cost 1 0
+--writeArray fix 1 True
+--dijkstra n 1 graph pq fix cost
+dijkstra :: Int -> Int -> GraphW -> SkewHeap (Int, Int) -> Mark -> Cost -> IO Cost
+dijkstra n num graph pq fix cost
+  | n == num = return cost
+  | otherwise = do
+    let node = pop pq
+    if node == Nothing
+      then return cost
+      else do
+        let (w, v) = fromJust node
+            pq' = deleteMin pq
+        b <- readArray fix v
+        if b
+          then dijkstra n num graph pq' fix cost
+          else do
+            writeArray cost v w
+            writeArray fix v True
+            let ne = M.lookup v graph
+            if ne == Nothing
+              then dijkstra n (num+1) graph pq' fix cost
+              else do
+                let pq'' = foldl (addPQ w) pq' $ M.toList . fromJust $ ne
+                dijkstra n (num+1) graph pq'' fix cost
+
+
 type Edge = (Int, Int)
 type Graph = M.IntMap [Int]
 
