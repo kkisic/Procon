@@ -103,3 +103,17 @@ makeTable table n i
     ie <- readArray table (i+1)
     writeArray table i $ flip mod modN $ ie * (i+1)
     makeTable table i $ i-1
+
+
+
+--二分法 n:反復上限, [l, r],
+bisection :: Int -> Double -> Double -> [[Double]] -> Double
+bisection 100 l r input = l
+bisection n   l r input
+  | l == r = l
+  | otherwise = let m = (l + r) / 2
+                    b = f k m input
+                in if b
+                     then bisection (n+1) m r input
+                     else bisection (n+1) l m input
+    where f = undifined
