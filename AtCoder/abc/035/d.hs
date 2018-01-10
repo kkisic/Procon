@@ -11,7 +11,7 @@ type Vertex = (Int, Weight)
 type GraphW = M.IntMap Neighbor
 type Neighbor = M.IntMap Weight
 type Cost = IOUArray Int Int
-type Mark = IOUArray Int Bool
+type Node = (Int, Int)
 
 inf = maxBound :: Int
 
@@ -20,9 +20,7 @@ main = do
   a <- getIntListBC
   input <- map (\[x,y,w] -> (x,y,w)) <$> getInt2DListBC
   cost <- newArray (1, n) inf :: IO Cost
-  fix <- newArray (1, n) False :: IO Mark
   costR <- newArray (1, n) inf :: IO Cost
-  fixR <- newArray (1, n) False :: IO Mark
   let graph  = foldl makeGraphW M.empty input
       graphR = foldl makeGraphW M.empty $ map reverseEdge input
       ne  = M.lookup 1 graph
@@ -30,12 +28,11 @@ main = do
   if ne == Nothing || neR == Nothing
     then print $ (head a) * t
     else do
-      let pq  = foldl (addPQ 0) Empty $ M.toList . fromJust $ ne
-          pqR = foldl (addPQ 0) Empty $ M.toList . fromJust $ neR
+      let pq = insertPQ 0 Empty ne
+          pqR = insertPQ 0 Empty neR
       writeArray cost 1 0
-      writeArray fix 1 True
-      dijkstra n 1 graph pq fix cost
-      dijkstra n 1 graphR pqR fixR costR
+      dijkstra graph pq cost $ pop pq
+      dijkstra graphR pqR costR $ pop pqR
       ans <- mapM (solve cost costR t) (zip [1..n] a)
       print $ maximum ans
 
@@ -51,31 +48,26 @@ solve cost costR t (i, a) = do
       let remain = if t - x - y >= 0 then t - x - y else 0
       return $ remain * a
 
-dijkstra :: Int -> Int -> GraphW -> SkewHeap (Int, Int) -> Mark -> Cost -> IO Cost
-dijkstra n num graph pq fix cost
-  | n == num = return cost
-  | otherwise = do
-    let node = pop pq
-    if node == Nothing
-      then return cost
-      else do
-        let (w, v) = fromJust node
-            pq' = deleteMin pq
-        b <- readArray fix v
-        if b
-          then dijkstra n num graph pq' fix cost
-          else do
-            writeArray cost v w
-            writeArray fix v True
-            let ne = M.lookup v graph
-            if ne == Nothing
-              then dijkstra n (num+1) graph pq' fix cost
-              else do
-                let pq'' = foldl (addPQ w) pq' $ M.toList . fromJust $ ne
-                dijkstra n (num+1) graph pq'' fix cost
+dijkstra :: GraphW -> SkewHeap (Int, Int) -> Cost -> Maybe Node -> IO Cost
+dijkstra graph pq cost Nothing = return cost
+dijkstra graph pq cost node = do
+  let (w, v) = fromJust node
+      pq' = deleteMin pq
+  c <- readArray cost v
+  if c /= inf
+    then dijkstra graph pq' cost $ pop pq'
+    else do
+      writeArray cost v w
+      let ne = M.lookup v graph
+          pq'' = insertPQ w pq ne
+      dijkstra graph pq'' cost $ pop pq''
 
-addPQ :: Int -> SkewHeap (Int, Int) -> (Int, Int) -> SkewHeap (Int, Int)
-addPQ w heap (v', w') = push (w'+w, v') heap
+insertPQ :: Int -> SkewHeap (Int, Int) -> Maybe Neighbor -> SkewHeap (Int, Int)
+insertPQ w heap Nothing = heap
+insertPQ w heap ne      =
+  let neList = M.toList . fromJust $ ne
+  in foldl add heap neList
+  where add heap (v', w') = push (w'+w, v') heap
 
 --重み付き有向グラフ隣接リスト
 makeGraphW :: GraphW -> EdgeW -> GraphW

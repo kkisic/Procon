@@ -69,36 +69,33 @@ bf' n dst i weight (from, to, w) = do
 
 
 type Cost = IOUArray Int Int
-type Mark = IOUArray Int Bool
+type Node = (Int, Int)
 
---dijkstra n:頂点数, num:現確定数, SkewHeap (dist, vertex), Cost:iへの最短距離, Mark:iが確定済
---let ne  = M.lookup 1 graph
---    pq  = foldl (addPQ 0) Empty $ M.toList . fromJust $ ne
+--dijkstra SkewHeap (dist, vertex), Cost:iへの最短距離
+--let pq = insertPQ 0 Empty ne
+--    pqR = insertPQ 0 Empty neR
 --writeArray cost 1 0
---writeArray fix 1 True
---dijkstra n 1 graph pq fix cost
-dijkstra :: Int -> Int -> GraphW -> SkewHeap (Int, Int) -> Mark -> Cost -> IO Cost
-dijkstra n num graph pq fix cost
-  | n == num = return cost
-  | otherwise = do
-    let node = pop pq
-    if node == Nothing
-      then return cost
-      else do
-        let (w, v) = fromJust node
-            pq' = deleteMin pq
-        b <- readArray fix v
-        if b
-          then dijkstra n num graph pq' fix cost
-          else do
-            writeArray cost v w
-            writeArray fix v True
-            let ne = M.lookup v graph
-            if ne == Nothing
-              then dijkstra n (num+1) graph pq' fix cost
-              else do
-                let pq'' = foldl (addPQ w) pq' $ M.toList . fromJust $ ne
-                dijkstra n (num+1) graph pq'' fix cost
+--dijkstra graph pq cost $ pop pq
+dijkstra :: GraphW -> SkewHeap (Int, Int) -> Cost -> Maybe Node -> IO Cost
+dijkstra graph pq cost Nothing = return cost
+dijkstra graph pq cost node = do
+  let (w, v) = fromJust node
+      pq' = deleteMin pq
+  c <- readArray cost v
+  if c /= inf
+    then dijkstra graph pq' cost $ pop pq'
+    else do
+      writeArray cost v w
+      let ne = M.lookup v graph
+          pq'' = insertPQ w pq ne
+      dijkstra graph pq'' cost $ pop pq''
+
+insertPQ :: Int -> SkewHeap (Int, Int) -> Maybe Neighbor -> SkewHeap (Int, Int)
+insertPQ w heap Nothing = heap
+insertPQ w heap ne      =
+  let neList = M.toList . fromJust $ ne
+  in foldl add heap neList
+  where add heap (v', w') = push (w'+w, v') heap
 
 
 type Edge = (Int, Int)
