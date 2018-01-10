@@ -1,4 +1,5 @@
 import qualified Data.ByteString.Char8 as BC
+import qualified Data.Sequence as S
 import qualified Data.IntMap as M
 import Data.Maybe (fromJust)
 import Data.List
@@ -103,6 +104,23 @@ makeTable table n i
     ie <- readArray table (i+1)
     writeArray table i $ flip mod modN $ ie * (i+1)
     makeTable table i $ i-1
+
+
+
+--尺取り法
+inchWorm :: Int -> Int -> S.Seq Int -> [Int] -> [Int]
+inchWorm _     _       _           []     = []
+inchWorm limit sum seq (n:ns)
+  | S.length seq == 0 && limit >= sum + n
+    = (sum+n) : (inchWorm limit (sum+n) (S.empty S.|> n) ns)
+  | S.length seq == 0 = inchWorm limit sum S.empty ns
+  | limit >= sum + n  = (sum+n) : (inchWorm limit (sum+n) (seq S.|> n) ns)
+  | otherwise         = inchWorm limit ((-) sum (fst . dequeue $ seq)) (S.drop 1 seq) (n:ns)
+
+dequeue :: S.Seq a -> (a, S.Seq a)
+dequeue que = case S.viewl que of
+                S.EmptyL -> error "Empty Queue"
+                x S.:< xs -> (x, xs)
 
 
 
