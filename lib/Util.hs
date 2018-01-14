@@ -135,3 +135,24 @@ bisection n   l r input
                      then bisection (n+1) m r input
                      else bisection (n+1) l m input
     where f = undifined
+
+--bin sort
+bsort :: Int -> [Int] -> IO [Int]
+bsort n x = do
+  arr <- newArray (0, n) 0 :: IO Arr
+  foldM bsort' arr x
+  l <- getElems arr
+  sorted <- make arr [0..n]
+  return sorted
+    where bsort' :: Arr -> Int -> IO Arr
+          bsort' arr a = do
+            c <- readArray arr a
+            writeArray arr a $ c+1
+            return arr
+          make :: Arr -> [Int] -> IO [Int]
+          make _   []    = return []
+          make arr (i:is)
+            | otherwise = do
+              c <- readArray arr i
+              next <- make arr is
+              return $ (replicate c i) ++ next
