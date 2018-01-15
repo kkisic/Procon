@@ -13,6 +13,7 @@ type EdgeW = (Int, Int, Int)
 type Memo2D = IOUArray (Int, Int) Int
 
 --let index = [(k, i, j) | k <- [1..n], i <- [1..n], j <- [1..n]]
+--let index = [(k, i, j) | k <- [1..n], i <- [1..n], j <- [i..n]] --無向グラフ時半分推奨
 --(i, i) 0<=i<=n を0で初期化
 initWF :: Memo2D -> EdgeW -> IO Memo2D
 initWF memo (x, y, d) = do
@@ -28,6 +29,7 @@ warshallFloyd memo (k, i, j) = do
   z <- readArray memo (k, j)
   let minWeight = min x $ y + z
   writeArray memo (i, j) minWeight
+  --writeArray memo (j, i) minWeight 半分時
   return memo
 
 
@@ -73,7 +75,6 @@ type Node = (Int, Int)
 
 --dijkstra SkewHeap (dist, vertex), Cost:iへの最短距離
 --let pq = insertPQ 0 Empty ne
---    pqR = insertPQ 0 Empty neR
 --writeArray cost 1 0
 --dijkstra graph pq cost $ pop pq
 dijkstra :: GraphW -> SkewHeap (Int, Int) -> Cost -> Maybe Node -> IO Cost
