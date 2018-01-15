@@ -26,6 +26,9 @@ int2bin :: Int -> [Int]
 int2bin 0 = []
 int2bin n = n `mod` 2 : int2bin (n `div` 2)
 
+bitCount :: Int -> Int
+bitCount 0 = 0
+bitCount n = n `mod` 2 + bitCount (n `div` 2)
 
 repeatMemo :: IOUArray Int Int -> [Int] -> IO (IOUArray Int Int)
 repeatMemo memo (a:b:_) = do
@@ -156,3 +159,26 @@ bsort n x = do
               c <- readArray arr i
               next <- make arr is
               return $ (replicate c i) ++ next
+
+--約数
+divisor :: Int -> [Int]
+divisor n = divisor' [1..(floor . sqrt . realToFrac $ n)]
+  where divisor' [] = []
+        divisor' (i:is) = if mod n i == 0
+                            then if div n i /= i
+                                   then i : (div n i) : (divisor' is)
+                                   else i : (divisor' is)
+                            else divisor' is
+
+--素因数
+factorization :: Int -> [Int]
+factorization n = f n [2..(floor . sqrt . realToFrac $ n)]
+  where f n' [] = if n' == 1
+                    then []
+                    else [n']
+        f n' (i:is) = if mod n' i == 0
+                       then i : (f (g n' i) is)
+                       else f n' is
+        g n'' i
+          | mod n'' i == 0 = g (div n'' i) i
+          | otherwise      = n''
