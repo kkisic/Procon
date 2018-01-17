@@ -112,7 +112,7 @@ makeTable table n i
 
 --尺取り法
 inchWorm :: Int -> Int -> S.Seq Int -> [Int] -> [Int]
-inchWorm _     _       _           []     = []
+inchWorm _     _   _   []     = []
 inchWorm limit sum seq (n:ns)
   | S.length seq == 0 && limit >= sum + n
     = (sum+n) : (inchWorm limit (sum+n) (S.empty S.|> n) ns)
