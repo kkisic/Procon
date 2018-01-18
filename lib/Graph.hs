@@ -150,8 +150,8 @@ readWeight weight k (x, y) = do
 
 
 --DFS : 前pre 現在i
-search :: GraphW -> Memo -> Int -> IOUArray Int Bool -> Vertex -> IO (IOUArray Int Bool)
-search graph weight pre mark (i, w) = do
+dfs :: GraphW -> Memo -> Int -> IOUArray Int Bool -> Vertex -> IO (IOUArray Int Bool)
+dfs graph weight pre mark (i, w) = do
   isMark <- readArray mark i
   case isMark of
     True -> do
@@ -161,7 +161,7 @@ search graph weight pre mark (i, w) = do
       wSum <- readArray weight pre
       writeArray weight i (wSum + w)
       let ne = M.toList . fromJust $ M.lookup i graph
-      return =<< foldM (search graph weight i) mark ne
+      return =<< foldM (dfs graph weight i) mark ne
 
 --MST
 greedy :: Memo -> [EdgeW] -> Int -> Int -> IO Int
@@ -195,6 +195,86 @@ getRepresentative memo i = do
       pp <- getRepresentative memo parent
       writeArray memo i pp
       return pp
+
+
+--LCA doubling
+type Arr = IOUArray Int Int
+type Arr2D = IOUArray (Int, Int) Int
+
+--logの上限に注意
+maxLog = 18
+
+queryLCA :: Arr -> Arr2D -> Edge -> IO Int
+queryLCA depth table (u, v) = do
+  a <- lca depth table u v
+  d <- readArray depth a
+  x <- readArray depth u
+  y <- readArray depth v
+  return $ (x - d) + (y - d) + 1
+
+--DFS : 前pre 現在v 深さd
+dfsLCA :: Graph -> Int -> Int -> Arr2D -> Arr -> Int -> IO Arr
+dfsLCA graph pre d table depth v = do
+  writeArray table (v, 0) pre
+  writeArray depth v d
+  let ne = filter (/=pre) . fromJust . M.lookup v $ graph
+  if ne /= []
+    then foldM (dfsLCA graph v (d+1) table) depth ne
+    else return depth
+
+--ダブリング用parent表
+makeTableLCA :: Int -> Arr2D -> Int -> IO Arr2D
+makeTableLCA n table k = do
+  foldM make table [1..n]
+  where make :: Arr2D -> Int -> IO Arr2D
+        make t v = do
+          p <- readArray t (v, k)
+          if p == 1
+            then return t
+            else do
+              pp <- readArray t (p, k)
+              writeArray t (v, k+1) pp
+              return t
+
+--頂点vから根方向にdepth回辿った親
+ancestor :: Arr2D -> Int -> Int -> IO Int
+ancestor table v depth =
+  foldM anc v [0..maxLog-1]
+  where anc :: Int -> Int -> IO Int
+        anc vv i =
+          if shiftR depth i .&. 1 == 1
+            then readArray table (vv, i)
+            else return vv
+
+lca :: Arr -> Arr2D -> Int -> Int -> IO Int
+lca depth table u v = do
+  ud <- readArray depth u
+  vd <- readArray depth v
+  if ud > vd
+    then lca depth table v u
+    else do
+      v' <- ancestor table v (vd - ud)
+      if u == v'
+        then return u
+        else do
+          k <- lowerBound (judge table u v') (-1) $ 10^5
+          ancestor table u k
+
+judge :: Arr2D -> Int -> Int -> Int -> IO Bool
+judge table u v i = do
+  up <- ancestor table u i
+  vp <- ancestor table v i
+  return $ up == vp
+
+lowerBound :: (Int -> IO Bool) -> Int -> Int -> IO Int
+lowerBound f lb ub
+  | ub - lb == 1 = return ub
+  | otherwise = do
+    let mid = div (lb + ub) 2
+    flag <- f mid
+    if flag
+      then lowerBound f lb mid
+      else lowerBound f mid ub
 
 
 

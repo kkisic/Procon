@@ -45,6 +45,15 @@ repeatMemoize memo (i, j) = do
   return =<< foldM memoize memo [i..j]
 
 
+--2次元リスト(concat済)出力
+printList2D :: Int -> [Int] -> IO ()
+printList2D _ []   = return ()
+printList2D n list = do
+  print $ take n list
+  printList2D n $ drop n list
+
+
+
 --素数表 pn:登録済の素数の個数 n:表の上限 x:判定対象のリスト
 --ex) prime table 1 n [i | i <- [3..n], odd i == True]
 prime :: Table -> Int -> Int -> [Int] -> IO Table
