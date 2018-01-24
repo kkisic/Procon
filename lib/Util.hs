@@ -136,6 +136,29 @@ dequeue que = case S.viewl que of
 
 
 
+--二次元累積和
+type Arr2D = IOUArray (Int, Int) Int
+
+--[(0, 0), (n, n))
+accum2D :: Arr2D -> Point -> IO Arr2D
+accum2D cum (i, j) = do
+  x <- readArray cum (i-1, j)
+  y <- readArray cum (i, j-1)
+  z <- readArray cum (i-1, j-1)
+  w <- readArray cum (i, j)
+  writeArray cum (i, j) $ x + y - z + w
+  return cum
+
+query :: Arr2D -> (Int, Int, Int, Int) -> IO Int
+query cum (i, j, k, l) = do
+  a <- readArray cum (i, j)
+  b <- readArray cum (i, l)
+  c <- readArray cum (k, j)
+  d <- readArray cum (k, l)
+  return $ a + d - b - c
+
+
+
 --二分法 n:反復上限, [l, r],
 bisection :: Int -> Double -> Double -> [[Double]] -> Double
 bisection 100 l r input = l

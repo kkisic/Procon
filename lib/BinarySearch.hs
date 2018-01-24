@@ -26,7 +26,7 @@ lowerBound x xs = innerLB (0-1) ((+1) . snd $ bounds xs)
 --[lb, ub)
 upperBound :: (Int -> IO Bool) -> Int -> Int -> IO Int
 upperBound f lb ub
-  | ub - lb == 1 = return ub
+  | ub - lb == 1 = return lb
   | otherwise = do
     let mid = div (lb + ub) 2
     flag <- f mid
@@ -44,3 +44,32 @@ lowerBound f lb ub
     if flag
       then lowerBound f lb mid
       else lowerBound f mid ub
+
+
+
+--LIS
+lis :: Arr -> Arr -> Int -> IO Int
+lis l a n = do
+  v <- readArray a 0
+  writeArray l 0 v
+  lis' 1 1
+  where lis' :: Int -> Int -> IO Int
+        lis' len i
+          | i >= n = return len
+          | otherwise = do
+            x <- readArray l $ len-1
+            y <- readArray a i
+            if x < y
+              then do
+                writeArray l len y
+                lis' (len+1) $ i+1
+              else do
+                j <- lowerBound (judge l y) (-1) (len-1)
+                writeArray l j y
+                lis' len $ i+1
+
+--LIS用lowerBound判定関数
+judge :: Arr -> Int -> Int -> IO Bool
+judge arr v x = do
+  a <- readArray arr x
+  return $ a >= v
