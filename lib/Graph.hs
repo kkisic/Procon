@@ -10,19 +10,19 @@ main = return ()
 
 --重み付き辺
 type EdgeW = (Int, Int, Int)
-type Memo2D = IOUArray (Int, Int) Int
+type Arr2D = IOUArray (Int, Int) Int
 
 --let index = [(k, i, j) | k <- [1..n], i <- [1..n], j <- [1..n]]
 --let index = [(k, i, j) | k <- [1..n], i <- [1..n], j <- [i..n]] --無向グラフ時半分推奨
 --(i, i) 0<=i<=n を0で初期化
-initWF :: Memo2D -> EdgeW -> IO Memo2D
+initWF :: Arr2D -> EdgeW -> IO Arr2D
 initWF memo (x, y, d) = do
   writeArray memo (x, y) d
   writeArray memo (y, x) d
   return memo
 
 --INFの値に注意
-warshallFloyd :: Memo2D -> (Int, Int, Int) -> IO Memo2D
+warshallFloyd :: Arr2D -> (Int, Int, Int) -> IO Arr2D
 warshallFloyd memo (k, i, j) = do
   x <- readArray memo (i, j)
   y <- readArray memo (i, k)
@@ -35,11 +35,11 @@ warshallFloyd memo (k, i, j) = do
 
 
 --type EdgeW = (Int, Int, Int)
-type Memo = IOUArray Int Int
+type Arr = IOUArray Int Int
 infinite = maxBound :: Int
 
 --始点:s weight[s] = 0, 他はweight[i] = infinite
-bellmanFord :: [EdgeW] -> Int -> Int -> Memo -> Int -> IO Memo
+bellmanFord :: [EdgeW] -> Int -> Int -> Arr -> Int -> IO Arr
 bellmanFord edge n dst weight i = do
   b <- readArray weight 0
   case b of
@@ -50,7 +50,7 @@ bellmanFord edge n dst weight i = do
       return weight
 
 --始点からdstの間にある負閉路を検出(weight[0] = 1)
-bf' :: Int -> Int -> Int -> Memo -> EdgeW -> IO Memo
+bf' :: Int -> Int -> Int -> Arr -> EdgeW -> IO Arr
 bf' n dst i weight (from, to, w) = do
   updatable <- readArray weight 0
   case updatable of
@@ -70,8 +70,11 @@ bf' n dst i weight (from, to, w) = do
 
 
 
+--Dijkstra
 type Cost = IOUArray Int Int
 type Node = (Int, Int)
+
+inf = 10^10
 
 --dijkstra SkewHeap (dist, vertex), Cost:iへの最短距離
 --let pq = insertPQ 0 Empty ne
@@ -142,7 +145,7 @@ readEdge :: GraphW -> (Int, Int) -> Int
 readEdge graph (i, j) = let ne = fromJust $ M.lookup i graph
                         in fromJust $ M.lookup j ne
 
-readWeight :: Memo -> Int -> (Int, Int) -> IO Int
+readWeight :: Arr -> Int -> (Int, Int) -> IO Int
 readWeight weight k (x, y) = do
   kx <- readArray weight x
   ky <- readArray weight y
@@ -150,7 +153,7 @@ readWeight weight k (x, y) = do
 
 
 --DFS : 前pre 現在i
-dfs :: GraphW -> Memo -> Int -> IOUArray Int Bool -> Vertex -> IO (IOUArray Int Bool)
+dfs :: GraphW -> Arr -> Int -> IOUArray Int Bool -> Vertex -> IO (IOUArray Int Bool)
 dfs graph weight pre mark (i, w) = do
   isMark <- readArray mark i
   case isMark of
@@ -164,7 +167,7 @@ dfs graph weight pre mark (i, w) = do
       return =<< foldM (dfs graph weight i) mark ne
 
 --MST
-greedy :: Memo -> [EdgeW] -> Int -> Int -> IO Int
+greedy :: Arr -> [EdgeW] -> Int -> Int -> IO Int
 greedy parent ((i, j, w):es) n k
   | n == k    = return 0
   | otherwise = do
@@ -176,7 +179,7 @@ greedy parent ((i, j, w):es) n k
                   sum <- greedy parent es n $ k + 1
                   return $ w + sum
 
-unionFind :: Memo -> [Edge] -> IO Memo
+unionFind :: Arr -> [Edge] -> IO Arr
 unionFind memo [] = return memo
 unionFind memo ((i, j):es) = do
   pI <- getRepresentative memo i
@@ -186,7 +189,7 @@ unionFind memo ((i, j):es) = do
                 writeArray memo pI pJ
                 unionFind memo es
 
-getRepresentative :: Memo -> Int -> IO Int
+getRepresentative :: Arr -> Int -> IO Int
 getRepresentative memo i = do
   parent <- readArray memo i
   case parent of
@@ -279,7 +282,7 @@ lowerBound f lb ub
 
 
 --bitDP v <- [0..n-1]
-dp :: Graph -> Memo -> (Int, Int) -> IO Memo
+dp :: Graph -> Arr -> (Int, Int) -> IO Arr
 dp graph memo (a, v) = do
   if 1 .&. shiftR a v == 1
     then return memo
