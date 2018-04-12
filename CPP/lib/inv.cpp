@@ -42,7 +42,7 @@ int comb(const vector<int>& t, int cn, int n, int k){
     if(n < k){
         return 0;
     }
-    return cn * t[k] % mod * t[n-k] % MOD;
+    return cn * t[k] % MOD * t[n-k] % MOD;
 }
 
 vector<int> makeTable(int n){
@@ -53,6 +53,19 @@ vector<int> makeTable(int n){
         t[i] = t[i+1] * (i+1) % MOD;
     }
     return t;
+}
+
+//表を作らない
+int comb(int n, int k){
+    if(n < k){
+        return 0;
+    }
+    int kFactInv = powM(factM(k), MOD - 2);
+    int x = 1;
+    for(int i = n; i > n - k; i--){
+        x = i % MOD * x % MOD;
+    }
+    return kFactInv * x % MOD;
 }
 
 signed main (){
