@@ -38,22 +38,27 @@ int factM(int n){
     return t[n];
 }
 
-int comb(const vector<int>& t, int cn, int n, int k){
-    if(n < k){
-        return 0;
-    }
-    return cn * t[k] % MOD * t[n-k] % MOD;
-}
+class combination{
+    private:
+        vector<int> t;
 
-vector<int> makeTable(int n){
-    vector<int> t(n+1);
-    t[n] = powM(factM(n), MOD-2);
+    public:
+        combination(int n): t(n+1){
+            t[n] = powM(factM(n), MOD-2);
 
-    for(int i = n-1; i >= 0; i--){
-        t[i] = t[i+1] * (i+1) % MOD;
-    }
-    return t;
-}
+            for(int i = n-1; i >= 0; i--){
+                t[i] = t[i+1] * (i+1) % MOD;
+            }
+
+        }
+
+        int comb(int n, int k){
+            if(n < k){
+                return 0;
+            }
+            return factM(n) * t[k] % MOD * t[n-k] % MOD;
+        }
+};
 
 //表を作らない
 int comb(int n, int k){
