@@ -35,6 +35,7 @@ vector<int> prime(int n){
             t.push_back(i);
         }
     }
+    return t;
 }
 
 signed main (){
