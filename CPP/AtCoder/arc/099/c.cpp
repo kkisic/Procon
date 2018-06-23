@@ -25,19 +25,9 @@ signed main(){
     int x;
     rep(i, n){
         cin >> a[i];
-        if(a[i] == 1){
-            x = i;
-        }
     }
-
-    int l = x;
-    int r = n - 1 - x;
-    int nl = l % (k - 1);
-    int nr = r % (k - 1);
-
-    int ans = l / (k-1) + r / (k-1);
-    ans += (nl + nr) / (k-1);
-    if((nl + nr) % (k-1) > 0){
+    int ans = (n-1) / (k-1);
+    if((n-1) % (k-1) != 0){
         ans++;
     }
     cout << ans << endl;
