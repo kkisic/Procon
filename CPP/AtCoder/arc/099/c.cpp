@@ -21,16 +21,7 @@ const int MOD = 1e9+7;
 signed main(){
     int n, k;
     cin >> n >> k;
-    vector<int> a(n);
-    int x;
-    rep(i, n){
-        cin >> a[i];
-    }
-    int ans = (n-1) / (k-1);
-    if((n-1) % (k-1) != 0){
-        ans++;
-    }
-    cout << ans << endl;
+    cout << ceil((double)(n-1) / (k-1)) << endl;
 
     return 0;
 }
