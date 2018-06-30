@@ -1,4 +1,3 @@
-
 class edge{
     public:
         int u;
@@ -20,31 +19,32 @@ class edge{
         }
 };
 
-pair<vector<int>, vector<int>> dijkstra(const vector<vector<edge>>& graph, int n, int s){
+pair<vector<int>, vector<int>> dijkstra(const vector<vector<P>>& graph, int n, int s){
     vector<int> d(n+1, INF);
     d[s] = 0;
 
-    vector<int> p(n+k, -1);
+    vector<int> p(n+1, -1);
     p[s] =  s;
 
     priority_queue<P, vector<P>, greater<P>> que;
-    que.push(make_pair(0, s));
+    que.emplace(0, s);
 
-    while(!q.empty()){
-        P p = que.top();
-        int to = p.second;
+    while(!que.empty()){
+        int w = que.top().first;
+        int to = que.top().second;
         que.pop();
 
-        if(d[to] < p.first){
+        if(d[to] < w){
             continue;
         }
 
-        for(int i = 0; i < graph[to].size(); i++){
-            edge e = graph[to][i];
-            if(d[e.v] > d[to] + e.w){
-                d[e.v] = d[to] + e.w;
-                p[e.v] = e.u;
-                que.push(make_pair(d[e.v], e.v));
+        rep(i, (int)graph[to].size()){
+            int from = graph[to][i].first;
+            int nw = w + graph[to][i].second;
+            if(nw < d[from]){
+                d[from] = nw;
+                p[from] = to;
+                que.emplace(nw, from);
             }
         }
     }
