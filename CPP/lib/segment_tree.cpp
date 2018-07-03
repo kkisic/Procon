@@ -1,8 +1,8 @@
 //Range Minimum Query
-//segment_tree<int> st(L+1, INF, [](int a, int b){return min(a, b);});
+//segment_tree<int> st(n+1, INF, [](int a, int b){return min(a, b);});
 
 //Range Sum Query
-//segment_tree<int> st(L+1, 0, [](int a, int b){return a+b;});
+//segment_tree<int> st(n+1, 0, [](int a, int b){return a+b;});
 
 template <typename T>
 class segment_tree{
@@ -48,6 +48,7 @@ class segment_tree{
             }
         }
 
+        //[s, t)
         T query(int s, int t) const {
             return query(s, t, 0, 0, n);
         }
