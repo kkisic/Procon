@@ -9,6 +9,7 @@
 #include <tuple>
 #include <bitset>
 #include <algorithm>
+#include <functional>
 #include <utility>
 #include <iomanip>
 
