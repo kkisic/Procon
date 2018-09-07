@@ -5,6 +5,3 @@ main = do
   if mod k 2 == 0
     then print $ (x ^ 3) + (y ^ 3)
     else print $ x ^ 3
-
-
-

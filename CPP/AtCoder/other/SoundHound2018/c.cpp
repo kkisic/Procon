@@ -76,6 +76,8 @@ class make_graph{
         make_graph(const vector<vector<bool>>& able, int h, int w)
             : h(h), w(w), n(h*w+2), able(able) {}
 
+        //2部グラフのフローへ変換
+        //始点0, 終点n-1
         vector<vector<edge_flow>> flow(){
             vector<vector<edge_flow>> edge(n, vector<edge_flow>());
 
@@ -102,6 +104,32 @@ class make_graph{
                         if(0 <= nx && nx < h && 0 <= ny && ny < w && able[nx][ny]){
                             edge[v].push_back(edge_flow{u, 1, (int)edge[u].size()});
                             edge[u].push_back(edge_flow{v, 0, (int)edge[v].size() - 1});
+                        }
+                    }
+                }
+            }
+
+            return edge;
+        }
+
+        vector<vector<int>> graph(){
+            vector<vector<int>> edge(n, vector<int>());
+
+            rep(i, h){
+                rep(j, w){
+                    if(not able[i][j]){
+                        continue;
+                    }
+                    int v = i * w + j;
+
+                    rep(k, 4){
+                        int nx = i + d[k];
+                        int ny = j + d[k^1];
+                        int u = nx * w + ny;
+
+                        if(0 <= nx && nx < h && 0 <= ny && ny < w && able[nx][ny]){
+                            edge[v].push_back(u);
+                            edge[u].push_back(v);
                         }
                     }
                 }
