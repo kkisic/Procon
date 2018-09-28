@@ -49,7 +49,6 @@ class combination{
             for(int i = n-1; i >= 0; i--){
                 t[i] = t[i+1] * (i+1) % MOD;
             }
-
         }
 
         int comb(int n, int k){
@@ -57,6 +56,10 @@ class combination{
                 return 0;
             }
             return factM(n) * t[k] % MOD * t[n-k] % MOD;
+        }
+
+        int getInv(int n){
+            return t[n];
         }
 };
 
