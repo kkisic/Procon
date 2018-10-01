@@ -137,18 +137,21 @@ class make_graph{
         }
 };
 
-pair<vector<int>, vector<int>> dijkstra(const vector<vector<P>>& graph, int n, int s){
-    vector<int> d(n+1, INF);
+template <typename T>
+pair<vector<T>, vector<int>> dijkstra(const vector<vector<pair<int, T>>>& graph, int n, int s){
+    typedef pair<T, int> PP;
+
+    vector<T> d(n+1, INF);
     d[s] = 0;
 
     vector<int> p(n+1, -1);
     p[s] =  s;
 
-    priority_queue<P, vector<P>, greater<P>> que;
-    que.emplace(0, s);
+    priority_queue<PP, vector<PP>, greater<PP>> que;
+    que.emplace((T)0, s);
 
     while(!que.empty()){
-        int w = que.top().first;
+        T w = que.top().first;
         int to = que.top().second;
         que.pop();
 
@@ -158,7 +161,7 @@ pair<vector<int>, vector<int>> dijkstra(const vector<vector<P>>& graph, int n, i
 
         rep(i, (int)graph[to].size()){
             int from = graph[to][i].first;
-            int nw = w + graph[to][i].second;
+            T nw = w + graph[to][i].second;
             if(nw < d[from]){
                 d[from] = nw;
                 p[from] = to;
