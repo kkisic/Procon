@@ -162,9 +162,9 @@ pair<vector<T>, vector<int>> dijkstra(const vector<vector<pair<int, T>>>& graph,
             continue;
         }
 
-        for(pair<int, T> p : graph[v]){
-            int u = p.first;
-            T nw = w + p.second;
+        for(pair<int, T> edge : graph[v]){
+            int u = edge.first;
+            T nw = w + edge.second;
             if(nw < d[u]){
                 d[u] = nw;
                 p[u] = v;
