@@ -109,7 +109,7 @@ class make_graph{
             return edge;
         }
 
-        //有向グラフ
+        //重みなし有向グラフ
         vector<vector<int>> graph(){
             vector<vector<int>> edge(n, vector<int>());
 
@@ -127,13 +127,16 @@ class make_graph{
 
                         if(0 <= nx && nx < h && 0 <= ny && ny < w && able[nx][ny]){
                             edge[v].push_back(u);
-                            edge[u].push_back(v);
                         }
                     }
                 }
             }
 
             return edge;
+        }
+
+        int convert(int x, int y){
+            return x * w + y;
         }
 };
 
@@ -152,20 +155,20 @@ pair<vector<T>, vector<int>> dijkstra(const vector<vector<pair<int, T>>>& graph,
 
     while(!que.empty()){
         T w = que.top().first;
-        int to = que.top().second;
+        int v = que.top().second;
         que.pop();
 
-        if(d[to] < w){
+        if(d[v] < w){
             continue;
         }
 
-        rep(i, (int)graph[to].size()){
-            int from = graph[to][i].first;
-            T nw = w + graph[to][i].second;
-            if(nw < d[from]){
-                d[from] = nw;
-                p[from] = to;
-                que.emplace(nw, from);
+        for(pair<int, T> p : graph[v]){
+            int u = p.first;
+            T nw = w + p.second;
+            if(nw < d[u]){
+                d[u] = nw;
+                p[u] = v;
+                que.emplace(nw, u);
             }
         }
     }
