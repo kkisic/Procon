@@ -5,7 +5,7 @@ class pair_combination{
         vector<P> tmp;
         vector<vector<P>> pairs;
 
-        void make(int p, int fst){
+        void make(int p){
             if((int)tmp.size() == n / 2){
                 pairs.push_back(tmp);
                 return;
@@ -23,12 +23,12 @@ class pair_combination{
                 used[i] = true;
                 tmp.emplace_back(p, i);
                 int next;
-                for(next = fst; next < n; next++){
+                for(next = 0; next < n; next++){
                     if(not used[next]){
                         break;
                     }
                 }
-                make(next, fst);
+                make(next);
                 used[i] = false;
                 tmp.pop_back();
             }
@@ -42,11 +42,11 @@ class pair_combination{
                     make(0, 0);
                 }else{
                     used[0] = true;
-                    make(1, 0);
+                    make(1);
                     used[0] = false;
                     for(int i = 1; i < n; i++){
                         used[i] = true;
-                        make(0, 0);
+                        make(0);
                         used[i] = false;
                     }
                 }
