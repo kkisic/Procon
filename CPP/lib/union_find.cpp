@@ -89,19 +89,24 @@ template <typename T>
 class pertially_persistent_union_find{
     private:
         int n;
-        vector<T> p, rank, time;
+        vector<T> rank, time;
+        vector<vector<P>> add;
         int now;
 
     public:
         pertially_persistent_union_find(int n)
-            : n(n), p(n+1, -1), rank(n+1), time(n+1, INF), now(0) {}
+            : n(n), rank(n+1, 1), time(n+1, INF), add(n+1), now(0) {
+                for(vector<P> &a : add){
+                    a.emplace_back(0, 1);
+                }
+            }
 
         int find(int v, int t){
             if(time[v] > t){
                 return v;
             }
 
-            return find(p[v], t);
+            return find(rank[v], t);
         }
 
         bool unite(int u, int v){
@@ -117,13 +122,28 @@ class pertially_persistent_union_find{
                 swap(u_root, v_root);
             }
 
-            if(rank[u_root] == rank[v_root]){
-                rank[u_root]++;
-            }
-
-            p[v_root] = u_root;
+            //親: u, 子: v
+            rank[u_root] += rank[v_root];
+            rank[v_root] = u_root;
+            add[u_root].emplace_back(now, rank[u_root]);
             time[v_root] = now;
             return true;
+        }
+
+        int size(int v, int t){
+            int v_root = find(v, t);
+
+            int lo = 0;
+            int hi = add[v_root].size();
+            while(hi - lo > 1){
+                int mid = (hi + lo) / 2;
+                if(add[v_root][mid].first <= t){
+                    lo = mid;
+                }else{
+                    hi = mid;
+                }
+            }
+            return add[v_root][lo].second;
         }
 
         //(u, v)が連結になった時刻
