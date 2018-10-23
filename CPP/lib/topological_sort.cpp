@@ -21,6 +21,40 @@ class topological_sort{
             return true;
         }
 
+        //sortedが辞書順最小
+        bool kahn_sort(){
+            priority_queue<int, vector<int>, greater<int>> s;
+            vector<int> in(n);
+
+            rep(v, n){
+                for(int u : edge[v]) in[u]++;
+            }
+
+            rep(v, n){
+                if(in[v] == 0) s.push(v);
+            }
+
+            while(not s.empty()){
+                int v = s.top();
+                sorted.push_back(v);
+                s.pop();
+
+                for(int u : edge[v]){
+                    in[u]--;
+                    if(in[u] == 0){
+                        s.push(u);
+                    }
+                }
+            }
+
+            rep(i, n){
+                if(in[i] > 0){
+                    return false;
+                }
+            }
+            return true;
+        }
+
     private:
         bool dfs(int v){
             if(mark[v] == -1){
