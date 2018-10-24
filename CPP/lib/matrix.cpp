@@ -65,3 +65,37 @@ Mat powMat(Mat a, int n){
     }
     return b;
 }
+
+//int型で2値ベクトルを表現してる場合の掃き出し法
+//a: 行列, k: 次元数
+vector<int> gaussian_bit(vector<int> a, int k){
+    int n = a.size();
+    set<int> as;
+
+    rep(i, k){
+        int axis = -1;
+        rep(j, n){
+            if((a[j] >> i) % 2 == 1 && as.find(j) == as.end()){
+                axis = j;
+                as.insert(j);
+                break;
+            }
+        }
+
+        if(axis == -1){
+            continue;
+        }
+
+        rep(j, n){
+            if(j == axis){
+                continue;
+            }
+            if((a[j] >> i) % 2 == 1){
+                a[j] ^= a[axis];
+            }
+        }
+    }
+    sort(a.begin(), a.end());
+
+    return a;
+}
