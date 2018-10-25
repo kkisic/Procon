@@ -54,7 +54,6 @@ signed main(){
             continue;
         }
 
-        //cout << s << " " << t << endl;
         if(mark[s][t] != init && mark[s][t].first + mark[s][t].second >= le + ri){
             continue;
         }
@@ -78,21 +77,16 @@ signed main(){
         }
     }
 
-    //cout << endl;
     int ans = 0;
     rep(i, n){
         rep(j, m){
             if(mark[i][j] != init){
                 ans++;
-                //cout << '+';
                 continue;
             }
-            //cout << (a[i][j] ? '.' : '*');
         }
-        //cout << endl;
     }
     cout << ans << endl;
-
 
     return 0;
 }
