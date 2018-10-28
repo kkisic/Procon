@@ -37,7 +37,6 @@ signed main(){
     }
 
     vector<int> pos;
-    set<char> cs;
     vector<int> len(n+1);
     for(int i = n; i >= 0; i--){
         int far = 0;
