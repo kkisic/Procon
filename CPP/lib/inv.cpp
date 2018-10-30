@@ -52,7 +52,7 @@ class combination{
         }
 
         int comb(int n, int k){
-            if(n < k){
+            if(n < k || n < 0 || k < 0){
                 return 0;
             }
             return factM(n) * t[k] % MOD * t[n-k] % MOD;
