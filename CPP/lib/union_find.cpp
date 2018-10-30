@@ -16,22 +16,22 @@ class union_find{
         }
 
         void unite(int u, int v){
-            int u_root = find(u);
-            int v_root = find(v);
+            u = find(u);
+            v = find(v);
 
-            if(u_root == v_root){
+            if(u == v){
                 return;
             }
 
-            if(rank[u_root] < rank[v_root]){
-                swap(u_root, v_root);
+            if(rank[u] < rank[v]){
+                swap(u, v);
             }
 
-            if(rank[u_root] == rank[v_root]){
+            if(rank[u] == rank[v]){
                 rank[u]++;
             }
 
-            p[v_root] = u_root;
+            p[v] = u;
         }
 };
 
@@ -111,39 +111,39 @@ class pertially_persistent_union_find{
 
         bool unite(int u, int v){
             ++now;
-            int u_root = find(u, now);
-            int v_root = find(v, now);
+            u = find(u, now);
+            v = find(v, now);
 
-            if(u_root == v_root){
+            if(u == v){
                 return false;
             }
 
-            if(rank[u_root] < rank[v_root]){
-                swap(u_root, v_root);
+            if(rank[u] < rank[v]){
+                swap(u, v);
             }
 
             //親: u, 子: v
-            rank[u_root] += rank[v_root];
-            rank[v_root] = u_root;
-            add[u_root].emplace_back(now, rank[u_root]);
-            time[v_root] = now;
+            rank[u] += rank[v];
+            rank[v] = u;
+            add[u].emplace_back(now, rank[u]);
+            time[v] = now;
             return true;
         }
 
         int size(int v, int t){
-            int v_root = find(v, t);
+            v = find(v, t);
 
             int lo = 0;
-            int hi = add[v_root].size();
+            int hi = add[v].size();
             while(hi - lo > 1){
                 int mid = (hi + lo) / 2;
-                if(add[v_root][mid].first <= t){
+                if(add[v][mid].first <= t){
                     lo = mid;
                 }else{
                     hi = mid;
                 }
             }
-            return add[v_root][lo].second;
+            return add[v][lo].second;
         }
 
         //(u, v)が連結になった時刻
