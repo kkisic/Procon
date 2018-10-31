@@ -1,12 +1,12 @@
 //n : 頂点数
-class topological_sort{
+class TopologicalSort{
     public:
         int n;
         vector<vector<int>> edge;
         vector<int> sorted;
         vector<int> mark;
 
-        topological_sort(int n, vector<vector<int>>edge)
+        TopologicalSort(int n, vector<vector<int>>edge)
             : n(n), edge(edge), sorted(), mark(n) {}
 
         bool sort(){

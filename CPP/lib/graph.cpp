@@ -21,13 +21,13 @@ class edge{
 
 struct edge_flow{int to, cap, rev;};
 
-class ford_fulkerson{
+class FordFulkerson{
     public:
         int n;
         vector<vector<edge_flow>> edge;
         vector<bool> used;
 
-        ford_fulkerson(const vector<vector<edge_flow>>& edge, int n)
+        FordFulkerson(const vector<vector<edge_flow>>& edge, int n)
             : n(n), edge(edge){}
 
         int dfs(int v, int t, int f){
@@ -63,13 +63,13 @@ class ford_fulkerson{
         }
 };
 
-class make_graph{
+class MakeGraph{
     public:
         int h, w, n;
         vector<vector<bool>> able;
         vector<int> d = {1, 0, -1, 0};
 
-        make_graph(const vector<vector<bool>>& able, int h, int w)
+        MakeGraph(const vector<vector<bool>>& able, int h, int w)
             : h(h), w(w), n(h*w+2), able(able) {}
 
         //2部グラフのフローへ変換

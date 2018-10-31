@@ -1,11 +1,11 @@
 //Range Minimum Query
-//segment_tree<int> st(n+1, INF, [](int a, int b){return min(a, b);});
+//SegmentTree<int> st(n+1, INF, [](int a, int b){return min(a, b);});
 
 //Range Sum Query
-//segment_tree<int> st(n+1, 0, [](int a, int b){return a+b;});
+//SegmentTree<int> st(n+1, 0, [](int a, int b){return a+b;});
 
 template <typename T>
-class segment_tree{
+class SegmentTree{
     private:
         static int calc_size(int n){
             int m = 1;
@@ -36,7 +36,7 @@ class segment_tree{
         T init;
         function<T(T, T)> f;
 
-        segment_tree(int n, T init, function<T(T, T)> f)
+        SegmentTree(int n, T init, function<T(T, T)> f)
             : n(calc_size(n)), node(calc_size(n) * 2, init), init(init), f(f){}
 
         void update(int i, const T& x){

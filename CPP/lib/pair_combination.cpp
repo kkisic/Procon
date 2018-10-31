@@ -1,4 +1,4 @@
-class pair_combination{
+class PairCombination{
     private:
         int n;
         vector<bool> used;
@@ -36,7 +36,7 @@ class pair_combination{
         }
 
     public:
-        pair_combination(int n)
+        PairCombination(int n)
             :n(n), used(n, false){
                 if(n % 2 == 0){
                     make(0, 0);

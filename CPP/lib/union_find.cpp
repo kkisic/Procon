@@ -1,10 +1,10 @@
 template <typename T>
-class union_find{
+class UnionFind{
     public:
         int n;
         vector<T> p, rank;
 
-        union_find(int n)
+        UnionFind(int n)
             : n(n), p(n+1, -1), rank(n+1) {}
 
         int find(int v){
@@ -15,12 +15,12 @@ class union_find{
             return p[v];
         }
 
-        void unite(int u, int v){
+        bool unite(int u, int v){
             u = find(u);
             v = find(v);
 
             if(u == v){
-                return;
+                return false;
             }
 
             if(rank[u] < rank[v]){
@@ -32,16 +32,17 @@ class union_find{
             }
 
             p[v] = u;
+            return true;
         }
 };
 
 template <typename T>
-class weighted_union_find{
+class WeightedUnionFind{
     public:
         int n;
         vector<T> p, w, rank;
 
-        weighted_union_find(int n)
+        WeightedUnionFind(int n)
             : n(n), p(n+1, -1), w(n+1), rank(n+1) {}
 
         int find(int v){
@@ -62,13 +63,13 @@ class weighted_union_find{
             return weight(v) - weight(u);
         }
 
-        void unite(int u, int v, int ww){
+        bool unite(int u, int v, int ww){
             ww = ww + weight(u) - weight(v);
             u = find(u);
             v = find(v);
 
             if(u == v){
-                return;
+                return false;
             }
 
             if(rank[u] < rank[v]){
@@ -82,11 +83,12 @@ class weighted_union_find{
 
             p[v] = u;
             w[v] = ww;
+            return true;
         }
 };
 
 template <typename T>
-class pertially_persistent_union_find{
+class PertiallyPersistentUnionFind{
     private:
         int n;
         vector<T> rank, time;
@@ -94,7 +96,7 @@ class pertially_persistent_union_find{
         int now;
 
     public:
-        pertially_persistent_union_find(int n)
+        PertiallyPersistentUnionFind(int n)
             : n(n), rank(n+1, 1), time(n+1, INF), add(n+1), now(0) {
                 for(vector<P> &a : add){
                     a.emplace_back(0, 1);

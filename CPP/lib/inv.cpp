@@ -38,12 +38,12 @@ int factM(int n){
     return t[n];
 }
 
-class combination{
+class Combination{
     private:
         vector<int> t;
 
     public:
-        combination(int n): t(n+1){
+        Combination(int n): t(n+1){
             t[n] = powM(factM(n), MOD-2);
 
             for(int i = n-1; i >= 0; i--){

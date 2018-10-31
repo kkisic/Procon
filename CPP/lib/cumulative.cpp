@@ -1,12 +1,12 @@
 //a[s][t] = 0 <= i < s, 0 <= j < t
 
 template <typename T>
-class cumulative{
+class Cumulative{
     public:
         int h, w;
         vector<vector<T>> c, a;
 
-        cumulative(const vector<vector<T>>& c, int h, int w)
+        Cumulative(const vector<vector<T>>& c, int h, int w)
             : h(h), w(w), c(c), a(h+1, vector<T>(w+1)) {
                 for(int i = 1; i <= h; i++){
                     for(int j = 1; j <= w; j++){

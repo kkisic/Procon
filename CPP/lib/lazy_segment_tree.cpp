@@ -1,6 +1,6 @@
 //Range Sum Query and Range Add Query
 template <typename T>
-class lazy_segment_tree{
+class LazySegmentTree{
     private:
         static int calc_size(int n){
             int m = 1;
@@ -63,7 +63,7 @@ class lazy_segment_tree{
         T init;
         function<T(T, T)> f;
 
-        lazy_segment_tree(int n, T init, function<T(T, T)> f)
+        LazySegmentTree(int n, T init, function<T(T, T)> f)
             : n(calc_size(n)), node(calc_size(n) * 2, init) , lazy(calc_size(n) * 2, 0), init(init), f(f) {}
 
         void update(int i, const T& x){
@@ -84,7 +84,7 @@ class lazy_segment_tree{
 
 //Range Update Query
 template <typename T>
-class lazy_segment_tree{
+class LazySegmentTree{
     private:
         static int calc_size(int n){
             int m = 1;
@@ -147,7 +147,7 @@ class lazy_segment_tree{
         T init;
         function<T(T, T)> f;
 
-        lazy_segment_tree(int n, T init, function<T(T, T)> f)
+        LazySegmentTree(int n, T init, function<T(T, T)> f)
             : n(calc_size(n)), node(calc_size(n) * 2, init) , lazy(calc_size(n) * 2, -1), init(init), f(f) {}
 
         T query(int s, int t){
@@ -161,7 +161,7 @@ class lazy_segment_tree{
 
 //Range Minimum Query ans Range Add Query
 template <typename T>
-class lazy_segment_tree{
+class LazySegmentTree{
     private:
         static int calc_size(int n){
             int m = 1;
@@ -224,7 +224,7 @@ class lazy_segment_tree{
         T init;
         function<T(T, T)> f;
 
-        lazy_segment_tree(int n, T init, function<T(T, T)> f)
+        LazySegmentTree(int n, T init, function<T(T, T)> f)
             : n(calc_size(n)), node(calc_size(n) * 2, init) , lazy(calc_size(n) * 2, 0), init(init), f(f) {}
 
         void update(int i, const T& x){

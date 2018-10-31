@@ -1,4 +1,4 @@
-class rolling_hash{
+class RollingHash{
     private:
         const static int mod1 = 999999937LL;
         const static int mod2 = 1000000007LL;
@@ -9,7 +9,7 @@ class rolling_hash{
         string s;
         vector<int> hash1, hash2, pow1, pow2;
 
-        rolling_hash(string s)
+        RollingHash(string s)
             :n(s.length()), s(s), hash1(n+1), hash2(n+1), pow1(n+1, 1), pow2(n+1, 1){
                 rep(i, n){
                     hash1[i+1] = (hash1[i] + s[i]) * base % mod1;
