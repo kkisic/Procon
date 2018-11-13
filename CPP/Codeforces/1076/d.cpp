@@ -113,7 +113,9 @@ signed main(){
         }
     }
 
-    cout << ans[0];
+    if(cnt > 0){
+        cout << ans[0];
+    }
     for(int i = 1; i < cnt; i++){
         cout << " " << ans[i];
     }
