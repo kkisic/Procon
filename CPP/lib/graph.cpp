@@ -36,7 +36,7 @@ class FordFulkerson{
             }
             used[v] = true;
 
-            rep(i, (int)edge[v].size()){
+            for(int i = 0; i < (int)edge[v].size(); i++){
                 edge_flow &e = edge[v][i];
                 if(not used[e.to] && e.cap > 0){
                     int d = dfs(e.to, t, min(f, e.cap));
@@ -78,8 +78,8 @@ class MakeGraph{
         vector<vector<edge_flow>> flow(){
             vector<vector<edge_flow>> edge(n, vector<edge_flow>());
 
-            rep(i, h){
-                rep(j, w){
+            for(int i = 0; i < h; i++){
+                for(int j = 0; j < w; j++){
                     if(not able[i][j]){
                         continue;
                     }
@@ -93,7 +93,7 @@ class MakeGraph{
                     edge[0].push_back(edge_flow{v, 1, (int)edge[v].size()});
                     edge[v].push_back(edge_flow{0, 0, (int)edge[0].size() - 1});
 
-                    rep(k, 4){
+                    for(int k = 0; k < 4; k++){
                         int nx = i + d[k];
                         int ny = j + d[k^1];
                         int u = nx * w + ny + 1;
@@ -113,14 +113,14 @@ class MakeGraph{
         vector<vector<int>> graph(){
             vector<vector<int>> edge(n, vector<int>());
 
-            rep(i, h){
-                rep(j, w){
+            for(int i = 0; i < h; i++){
+                for(int j = 0; j < w; j++){
                     if(not able[i][j]){
                         continue;
                     }
                     int v = i * w + j;
 
-                    rep(k, 4){
+                    for(int k = 0; k < 4; k++){
                         int nx = i + d[k];
                         int ny = j + d[k^1];
                         int u = nx * w + ny;

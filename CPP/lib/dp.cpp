@@ -25,6 +25,43 @@ int lis(const vector<int>& a){
     return ans;
 }
 
+//Longest Common Subsequence
+string lcs(string s, string t){
+    vector<vector<int>> dp((int)s.size() + 1, vector<int>((int)t.size() + 1));
+    for(int i = 0; i <= (int)s.size();; i++){
+        for(int j = 0; j <= (int)t.size(); j++){
+            if(i + 1 <= (int)s.size()){
+                dp[i+1][j] = max(dp[i+1][j], dp[i][j]);
+            }
+            if(j + 1 <= (int)t.size()){
+                dp[i][j+1] = max(dp[i][j+1], dp[i][j]);
+            }
+            if(i + 1 <= (int)s.size() && j + 1 <= (int)t.size()){
+                dp[i+1][j+1] = max(dp[i+1][j+1], dp[i][j] + (s[i] == t[j]));
+            }
+        }
+    }
+
+    int x = (int)s.size();
+    int y = (int)t.size();
+    string ans;
+    while(x > 0 && y > 0){
+        if(s[x-1] == t[y-1]){
+            ans.push_back(s[x-1]);
+            x--;
+            y--;
+            continue;
+        }
+        if(dp[x][y] == dp[x-1][y]){
+            x--;
+            continue;
+        }
+        y--;
+    }
+    reverse(ans.begin(), ans.end());
+    return ans;
+}
+
 
 //Traveling Salesman Problem
 //頂点番号: 0-Indexed(0 <= i < v)
@@ -33,11 +70,11 @@ int tsp(int v, const vector<vector<int>>& edge){
     //始点は0
     cost[1][0] = 0;
     for(int s = 0; s < (1 << v); s++){
-        rep(i, v){
+        for(int i = 0; i < v; i++){
             if(s != 0 && (s >> i) % 2 == 0){
                 continue;
             }
-            rep(j, v){
+            for(int j = 0; j < v; j++){
                 if((s >> j) % 2 == 1 || edge[i][j] == INF){
                     continue;
                 }
@@ -49,7 +86,7 @@ int tsp(int v, const vector<vector<int>>& edge){
     }
 
     int ans = INF;
-    rep(i, v){
+    for(int i = 0; i < v){
         if(ans > cost[(1 << v) - 1][i] + edge[i][0]){
             ans = cost[(1 << v) - 1][i] + edge[i][0];
         }

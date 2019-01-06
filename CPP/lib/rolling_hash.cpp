@@ -11,7 +11,7 @@ class RollingHash{
 
         RollingHash(string s)
             :n(s.length()), s(s), hash1(n+1), hash2(n+1), pow1(n+1, 1), pow2(n+1, 1){
-                rep(i, n){
+                for(int i = 0; i < n; i++){
                     hash1[i+1] = (hash1[i] + s[i]) * base % mod1;
                     hash2[i+1] = (hash2[i] + s[i]) * base % mod2;
                     pow1[i+1] = pow1[i] * base % mod1;

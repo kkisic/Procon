@@ -17,7 +17,7 @@ void construct(string s, vector<int>& sa){
     rank_sa = vector<int>(n+1);
     vector<int> tmp = vector<int>(n+1);
 
-    rep(i, n+1){
+    for(int i = 0; i <= n; i++)
         sa[i] = i;
         rank_sa[i] = i < n ? s[i] : -1;
     }
@@ -29,7 +29,7 @@ void construct(string s, vector<int>& sa){
         for(int i = 1; i <= n; i++){
             tmp[sa[i]] = tmp[sa[i-1]] + (compare_sa(sa[i-1], sa[i]) ? 1 : 0);
         }
-        rep(i, n+1){
+        for(int i = 0; i <= n; i++){
             rank_sa[i] = tmp[i];
         }
     }

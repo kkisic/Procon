@@ -23,7 +23,7 @@ class SCC{
             }
             used[v] = true;
 
-            rep(i, (int)edge[v].size()){
+            for(int i = 0; i < (int)edge[v].size(); i++){
                 dfs(edge[v][i]);
             }
             vs.push_back(v);
@@ -36,7 +36,7 @@ class SCC{
             used[v] = true;
             cmp[v] = k;
 
-            rep(i, (int)rev[v].size()){
+            for(int i = 0; i < (int)rev[v].size(); i++){
                 rdfs(rev[v][i], k);
             }
         }

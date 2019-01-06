@@ -1,16 +1,16 @@
-//n : 頂点数
+//n : 頂点数 0-indexed
 class TopologicalSort{
     public:
         int n;
         vector<vector<int>> edge;
-        vector<int> sorted;
+        vector<int> sorted; //DAGの逆順
         vector<int> mark;
 
         TopologicalSort(int n, vector<vector<int>>edge)
             : n(n), edge(edge), sorted(), mark(n) {}
 
         bool sort(){
-            rep(i, n+1){
+            for(int i = 0; i < n; i++){
                 if(mark[i] != 0){
                     continue;
                 }
@@ -26,11 +26,11 @@ class TopologicalSort{
             priority_queue<int, vector<int>, greater<int>> s;
             vector<int> in(n);
 
-            rep(v, n){
+            for(int v = 0; v < n; v++){
                 for(int u : edge[v]) in[u]++;
             }
 
-            rep(v, n){
+            for(int v = 0; v < n; v++){
                 if(in[v] == 0) s.push(v);
             }
 
@@ -47,7 +47,7 @@ class TopologicalSort{
                 }
             }
 
-            rep(i, n){
+            for(int i = 0; i < n; i++){
                 if(in[i] > 0){
                     return false;
                 }

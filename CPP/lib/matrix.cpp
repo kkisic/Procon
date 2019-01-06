@@ -24,9 +24,9 @@ typedef vector<Vec> Mat;
 Mat multi(Mat a, Mat b){
     Mat c(a.size(), Vec(b[0].size()));
 
-    rep(i, (int)a.size()){
-        rep(j, (int)b[0].size()){
-            rep(k, (int)b.size()){
+    for(int i = 0; i < (int)a.size(); i++){
+        for(int j = 0; j < (int)b[0].size(); j++){
+            for(int k = 0; k < (int)b.size(); k++){
                 c[i][j] = (c[i][j] + a[i][k] * b[k][j] % MOD) % MOD;
             }
         }
@@ -37,8 +37,8 @@ Mat multi(Mat a, Mat b){
 Vec multi(Mat a, Vec b){
     Vec c(a.size());
 
-    rep(i, (int)a.size()){
-        rep(j, (int)b.size()){
+    for(int i = 0; i < (int)a.size(); i++){
+        for(int j = 0; j < (int)b.size(); j++){
             c[i] = (c[i] + a[i][j] * b[j] % MOD) % MOD;
         }
     }
@@ -47,8 +47,8 @@ Vec multi(Mat a, Vec b){
 
 Mat powMat(Mat a, int n){
     Mat b(a.size(), Vec(a[0].size()));;
-    rep(i, (int)a.size()){
-        rep(j, (int)a[0].size()){
+    for(int i = 0; i < (int)a.size(); i++){
+        for(int j = 0; j < (int)a[0].size(); j++){
             if(i == j){
                 b[i][j] = 1;
             }
@@ -72,9 +72,9 @@ vector<int> gaussian_bit(vector<int> a, int k){
     int n = a.size();
     set<int> as;
 
-    rep(i, k){
+    for(int i = 0; i < k; i++){
         int axis = -1;
-        rep(j, n){
+        for(int j = 0; j < n; j++){
             if((a[j] >> i) % 2 == 1 && as.find(j) == as.end()){
                 axis = j;
                 as.insert(j);
@@ -86,7 +86,7 @@ vector<int> gaussian_bit(vector<int> a, int k){
             continue;
         }
 
-        rep(j, n){
+        for(int j = 0; j < n; j++){
             if(j == axis){
                 continue;
             }

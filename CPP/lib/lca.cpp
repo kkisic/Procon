@@ -1,4 +1,4 @@
-class lowest_common_ancestor{
+class LowestCommonAncestor{
     private:
         int n;
         int m;
@@ -43,7 +43,7 @@ class lowest_common_ancestor{
         }
 
     public:
-        lowest_common_ancestor(vector<vector<int>>& edge, int n):
+        LowestCommonAncestor(vector<vector<int>>& edge, int n):
             n(n), m(log2(n)), parent(m, vector<int>(n, -1)), dep(n){
                 init(edge);
             }
@@ -54,7 +54,7 @@ class lowest_common_ancestor{
             }
 
             int a = v;
-            rep(i, m){
+            for(int i = 0; i < m; i++){
                 if(d % 2 == 1){
                     a = parent[i][a];
                 }
