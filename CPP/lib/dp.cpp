@@ -94,3 +94,8 @@ int tsp(int v, const vector<vector<int>>& edge){
     //解なしの場合INF
     return ans;
 }
+
+//bitDP等での部分集合全列挙
+for(int t = s; t != 0; t = (t - 1) & s){
+    //処理
+}
