@@ -72,7 +72,6 @@ signed main(){
         return 0;
     }
 
-    int sum = 0;
     int row = 0;
     int column = 0;
     int ans = 1;
