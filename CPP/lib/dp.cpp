@@ -25,6 +25,40 @@ int lis(const vector<int>& a){
     return ans;
 }
 
+//Longest Increasing Subsequence
+//a:[begin, end), low <= a[i] <= high
+int lis(const vector<int>& a, int begin, int end, int low, int high){
+    int n = end - begin;
+    vector<int> dp(n+1, INF);
+    dp[0] = 0;
+    int i = 0;
+    for(int j = begin; j < end; j++){
+        if(a[begin+i] > high || a[begin+i] < low){
+            i++;
+            continue;
+        }
+        int l = 0;
+        int r = n;
+        while(r - l > 1){
+            int m = (r + l) / 2;
+            if(dp[m] < a[begin+i]){
+                l = m;
+            }else{
+                r = m;
+            }
+        }
+        dp[l+1] = a[begin+i];
+        i++;
+    }
+    int ans = 0;
+    for(int i = 0; i <= n; i++){
+        if(dp[i] != INF){
+            ans = i;
+        }
+    }
+    return ans;
+}
+
 //Longest Common Subsequence
 string lcs(string s, string t){
     vector<vector<int>> dp((int)s.size() + 1, vector<int>((int)t.size() + 1));
