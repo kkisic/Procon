@@ -95,7 +95,7 @@ class LazySegmentTree{
             }
             return m;
         }
-[
+
         void eval(int i, int l, int r){
             if(lazy[i] != 0){
                 node[i] += lazy[i];
