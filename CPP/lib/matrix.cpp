@@ -27,7 +27,7 @@ Vec multi(Mat a, Vec b){
 }
 
 Mat powMat(Mat a, int n){
-    Mat b(a.size(), Vec(a[0].size()));;
+    Mat b(a.size(), Vec(a[0].size()));
     for(int i = 0; i < (int)a.size(); i++){
         for(int j = 0; j < (int)a[0].size(); j++){
             if(i == j){
@@ -43,6 +43,32 @@ Mat powMat(Mat a, int n){
 
         n /= 2;
         a = multi(a, a);
+    }
+    return b;
+}
+
+//置換A : A(B) -> C
+Vec perm(Vec a, Vec b){
+    Vec c(b.size());
+    for(int i = 0; i < (int)a.size(); i++){
+        c[i] = b[a[i]];
+    }
+    return c;
+}
+
+Vec powPerm(Vec a, int n){
+    Vec b(a.size());;
+    for(int i = 0; i < (int)a.size(); i++){
+        b[i] = i;
+    }
+
+    while(n != 0){
+        if(n % 2 == 1){
+            b = perm(a, b);
+        }
+
+        n /= 2;
+        a = perm(a, a);
     }
     return b;
 }
