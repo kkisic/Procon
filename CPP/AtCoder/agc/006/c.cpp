@@ -44,8 +44,8 @@ vector3<T> initVec3(size_t n0, size_t n1, size_t n2, T e = T()){
 typedef vector<int> Vec;
 typedef vector<Vec> Mat;
 
-//転置A : A(B) -> C
-Vec trans(Vec a, Vec b){
+//置換A : A(B) -> C
+Vec perm(Vec a, Vec b){
     Vec c(b.size());
     for(int i = 0; i < (int)a.size(); i++){
         c[i] = b[a[i]];
@@ -53,7 +53,7 @@ Vec trans(Vec a, Vec b){
     return c;
 }
 
-Vec powTrans(Vec a, int n){
+Vec powPerm(Vec a, int n){
     Vec b(a.size());;
     for(int i = 0; i < (int)a.size(); i++){
         b[i] = i;
@@ -61,11 +61,11 @@ Vec powTrans(Vec a, int n){
 
     while(n != 0){
         if(n % 2 == 1){
-            b = trans(a, b);
+            b = perm(a, b);
         }
 
         n /= 2;
-        a = trans(a, a);
+        a = perm(a, a);
     }
     return b;
 }
@@ -97,7 +97,7 @@ signed main(){
         swap(z[a[i]-1], z[a[i]]);
     }
 
-    Vec yy = trans(powTrans(z, k), y);
+    Vec yy = perm(powPerm(z, k), y);
     vector<int> ans(n);
     ans[0] = x[0];
     rep(i, n - 1){
