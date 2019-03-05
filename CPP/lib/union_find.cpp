@@ -34,6 +34,12 @@ class UnionFind{
             p[v] = u;
             return true;
         }
+
+        bool same(int u, int v){
+            u = find(u);
+            v = find(v);
+            return u == v;
+        }
 };
 
 template <typename T>
