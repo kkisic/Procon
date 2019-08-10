@@ -174,3 +174,31 @@ pair<vector<T>, vector<int>> dijkstra(const vector<vector<pair<int, T>>>& graph,
     }
     return make_pair(d, p);
 }
+
+//Bellman-Ford
+typedef tuple<int, int, int> tup;
+vector<int> dist, pre;
+
+bool bellmanFord(vector<tup>& edge, int s){
+    dist = vector<int>(n + 1, INF);
+    pre = vector<int>(n + 1, -1);
+    dist[s] = 0;
+    bool negative = false;
+    for (int i = 0;; i++) {
+        bool update = false;
+
+        for(tup e : edge){
+            int from, to, cost;
+            tie(from, to, cost) = e;
+
+            if (dist[from] != INF && dist[to] > dist[from] + cost) {
+                dist[to] = dist[from] + cost;
+                pre[to] = from;
+                update = true;
+            }
+        }
+        if (!update) break;
+        if (i > n) { negative = true; break; }
+    }
+    return negative;
+}

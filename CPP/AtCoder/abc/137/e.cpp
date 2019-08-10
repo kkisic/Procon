@@ -40,13 +40,42 @@ vector3<T> initVec3(size_t n0, size_t n1, size_t n2, T e = T()){
     return vector3<T>(n0, vector2<T>(n1, vector<T>(n2, e)));
 }
 
+int n, m, p;
+
 typedef tuple<int, int, int> tup;
+vector<int> dist, pre;
+
+bool bellmanFord(vector<tup>& edge, int s, vector<bool>& used){
+    dist = vector<int>(n + 1, INF);
+    pre = vector<int>(n + 1, -1);
+    dist[s] = 0;
+    bool negative = false;
+    for (int i = 0;; i++) {
+        bool update = false;
+
+        for(tup e : edge){
+            int from, to, cost;
+            tie(from, to, cost) = e;
+
+            if(not used[from] || not used[to]){
+                continue;
+            }
+            if (dist[from] != INF && dist[to] > dist[from] - cost + p) {
+                dist[to] = dist[from] - cost + p;
+                pre[to] = from;
+                update = true;
+            }
+        }
+        if (!update) break;
+        if (i > n) { negative = true; break; }
+    }
+    return negative;
+}
 
 signed main(){
     ios::sync_with_stdio(false);
     cin.tie(0);
 
-    int n, m, p;
     cin >> n >> m >> p;
 
     vector<tup> vt(m);
@@ -82,29 +111,8 @@ signed main(){
             st.push(u);
         }
     }
-    //Bellman-Ford
-    vector<int> dist(n + 1, INF);
-    vector<int> prev(n + 1, -1);
-    dist[1] = 0;
-    bool negative_cycle = false;
-    for (int i = 0;; i++) {
-        bool update = false;
-        rep(i, m){
-            int a, b, c;
-            tie(a, b, c) = vt[i];
 
-            if(not used[a] || not used[b]){
-                continue;
-            }
-            if (dist[a] != INF && dist[b] > dist[a] - c + p) {
-                dist[b] = dist[a] - c + p;
-                prev[b] = a;
-                update = true;
-            }
-        }
-        if (!update) break;
-        if (i > n) { negative_cycle = true; break; }
-    }
+    int negative_cycle = bellmanFord(vt, 1, used);
 
     if(negative_cycle){
         cout << -1 << endl;
