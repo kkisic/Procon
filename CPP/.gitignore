@@ -1,1 +1,4 @@
-*/*/Makefile
+Makefile
+tmp.cpp
+!./tmp/Makefile
+!./tmp/tmp.cpp
